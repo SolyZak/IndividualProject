@@ -1,21 +1,66 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-function App() {
-  const [message, setMessage] = useState("");
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
+import LoggedHoursList from "./components/logs/LoggedHoursList";
+import AddLoggedHours from "./components/logs/AddLoggedHours";
+import EditLoggedHours from "./components/logs/EditLoggedHours";
+import AddProject from "./components/projects/AddProject";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:5000/")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-
+const App = () => {
   return (
-    <div>
-      <h1>React + Flask Integration</h1>
-      <p>{message}</p>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/signup" />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route
+            path="/logs"
+            element={
+              <ProtectedRoute>
+                <LoggedHoursList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute>
+                <AddLoggedHours />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add-project"
+            element={
+              <ProtectedRoute>
+                <AddProject />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit/:logId"
+            element={
+              <ProtectedRoute>
+                <EditLoggedHours />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
